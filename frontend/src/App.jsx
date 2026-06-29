@@ -5,6 +5,8 @@ const API = "/api/todos";
 export default function App() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState("");
 
   useEffect(() => {
     fetch(API)
@@ -66,7 +68,34 @@ export default function App() {
                   checked={todo.done}
                   onChange={() => toggleTodo(todo)}
                 />
-                <span>{todo.text}</span>
+                {editingId === todo.id ? (
+                  <input
+                    autoFocus
+                    value={editingText}
+                    onChange={(e) => setEditingText(e.target.value)}
+                    onBlur={async () => {
+                      const value = editingText.trim();
+                      setEditingId(null);
+                      if (!value || value === todo.text) return;
+                      try {
+                        const res = await fetch(`${API}/${todo.id}`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ text: value }),
+                        });
+                        const updated = await res.json();
+                        setTodos((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+                      } catch (err) {
+                        console.error("Failed to update todo:", err);
+                      }
+                    }}
+                    onKeyDown={async (e) => {
+                      if (e.key === "Enter") e.currentTarget.blur();
+                    }}
+                  />
+                ) : (
+                  <span onDoubleClick={() => { setEditingId(todo.id); setEditingText(todo.text); }}>{todo.text}</span>
+                )}
               </label>
               <button onClick={() => deleteTodo(todo.id)} className="delete">
                 ✕
