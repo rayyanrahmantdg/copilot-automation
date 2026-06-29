@@ -10,38 +10,40 @@ You are running an automated, approval-gated workflow. Work through the phases
 **in order**. After each phase that ends with **⛔ STOP**, you MUST stop and wait
 for the user to explicitly approve before continuing. Do not skip a gate.
 
-## Phase 1 — Read & plan
+## Phase 1 — Branch & plan
 
-1. Read [`CHANGES.md`](../../CHANGES.md) at the repository root.
-2. For every change listed in it, produce an implementation plan / design doc and
-   write it to `plans/IMPLEMENTATION-PLAN.md`. The doc must contain, per change:
+1. Run `git status` to confirm the working tree is clean. If there are unrelated
+   uncommitted changes, surface them and ask how to proceed.
+2. Read [`CHANGES.md`](../../CHANGES.md) at the repository root.
+3. Create and switch to a feature branch named `feature/<short-slug>`, where the
+   slug is derived from the changes (e.g. `feature/edit-todo-text`). All
+   subsequent work — including the plan doc — happens on this branch, never on
+   `main`.
+4. For every change listed in `CHANGES.md`, produce an implementation plan /
+   design doc and write it to `plans/IMPLEMENTATION-PLAN.md` on the feature
+   branch. The doc must contain, per change:
    - **Summary** — what the change is, in one or two sentences.
    - **Affected files** — the actual files you'll touch (verify they exist in the
      codebase; don't guess).
    - **Approach** — the concrete steps you'll take.
    - **Verification** — how you'll confirm it works (a command, a manual step, etc.).
    - **Risks / open questions** — anything the reviewer should weigh in on.
-3. Do **not** modify any application code in this phase. Only create the plan doc.
+5. Do **not** modify any application code in this phase. Only create the plan doc.
 
-⛔ **STOP.** Tell the user the plan is written to `plans/IMPLEMENTATION-PLAN.md`
-and ask them to review and approve it. Wait for explicit approval before Phase 2.
+⛔ **STOP.** Tell the user the feature branch is created and the plan is written to
+`plans/IMPLEMENTATION-PLAN.md`, and ask them to review and approve it. Wait for
+explicit approval before Phase 2.
 
-## Phase 2 — Branch & implement
+## Phase 2 — Implement
 
-Only after the user approves the plan:
+Only after the user approves the plan. You are already on the feature branch:
 
-1. Run `git status`. The plan doc from Phase 1 (`plans/IMPLEMENTATION-PLAN.md`)
-   will show as an untracked file — that is expected; leave it in place and do
-   **not** ask about it. Only if there are *other*, unrelated uncommitted changes
-   should you surface them and ask how to proceed.
-2. Create and switch to a feature branch named `feature/<short-slug>`, where the
-   slug is derived from the changes (e.g. `feature/edit-todo-text`).
-3. Implement the changes exactly as described in the approved plan — nothing more.
+1. Implement the changes exactly as described in the approved plan — nothing more.
    Make only the edits the plan calls for.
-4. Run the verification steps from the plan and report the results honestly. If a
+2. Run the verification steps from the plan and report the results honestly. If a
    step fails, fix it or surface the failure — do not claim success without
    evidence.
-5. Do **not** commit yet.
+3. Do **not** commit yet.
 
 ⛔ **STOP.** Summarize the code changes (a `git diff --stat` plus a short
 description) and ask the user to review and approve the implementation. Wait for
