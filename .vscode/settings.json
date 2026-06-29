@@ -1,0 +1,13 @@
+{
+  // Auto-approve the terminal commands the /implement-changes workflow runs, so
+  // the ONLY interruptions are the workflow's explicit human-approval gates
+  // (plan approval, code approval). Each key matches the start of a command line;
+  // `true` = run without asking.
+  "chat.tools.terminal.autoApprove": {
+    "git": true,
+    "gh": true,
+    "npm": true,
+    "node": true,
+    "curl": true
+  }
+}
