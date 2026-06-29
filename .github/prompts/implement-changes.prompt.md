@@ -1,6 +1,6 @@
 ---
 mode: agent
-description: Read CHANGES.md, propose a design doc, then (after approval) implement on a feature branch and commit.
+description: Read CHANGES.md, propose a design doc, then (after approval) implement on a feature branch, commit (incl. the plan), publish the branch, and open a PR.
 tools: ['codebase', 'search', 'editFiles', 'runCommands', 'changes']
 ---
 
@@ -30,8 +30,10 @@ and ask them to review and approve it. Wait for explicit approval before Phase 2
 
 Only after the user approves the plan:
 
-1. Confirm the working tree is clean (`git status`). If it isn't, surface that and
-   ask how to proceed.
+1. Run `git status`. The plan doc from Phase 1 (`plans/IMPLEMENTATION-PLAN.md`)
+   will show as an untracked file — that is expected; leave it in place and do
+   **not** ask about it. Only if there are *other*, unrelated uncommitted changes
+   should you surface them and ask how to proceed.
 2. Create and switch to a feature branch named `feature/<short-slug>`, where the
    slug is derived from the changes (e.g. `feature/edit-todo-text`).
 3. Implement the changes exactly as described in the approved plan — nothing more.
@@ -45,15 +47,20 @@ Only after the user approves the plan:
 description) and ask the user to review and approve the implementation. Wait for
 explicit approval before Phase 3.
 
-## Phase 3 — Commit
+## Phase 3 — Commit, publish & open PR
 
-Only after the user approves the code changes:
+Only after the user approves the code changes. Then do **all** of the following
+in sequence **without stopping again** — there is no further approval gate:
 
-1. Stage the changes (`git add -A`).
+1. Stage everything, including the plan doc: `git add -A`. The commit **must**
+   include `plans/IMPLEMENTATION-PLAN.md` — do not ask whether to include it.
 2. Commit with a clear, conventional message that references the change(s)
    implemented, e.g. `feat: inline edit for todo text`.
-3. Report the resulting branch name and commit hash. Do **not** push or open a PR
-   unless the user asks.
+3. Publish the feature branch: `git push -u origin <branch>`.
+4. Open a pull request automatically with the GitHub CLI, targeting `main`:
+   `gh pr create --base main --head <branch> --title "<title>" --body "<summary>"`.
+   Derive the title and body from the implemented changes and the approved plan.
+5. Report the branch name, commit hash, and the PR URL.
 
 ## Rules
 
