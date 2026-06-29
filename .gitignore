@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.log
+
+# Local tooling / session state — not part of the project
+.memsearch/
+.claude/settings.local.json
