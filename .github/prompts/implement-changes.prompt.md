@@ -31,8 +31,17 @@ for the user to explicitly approve before continuing. Do not skip a gate.
 5. Do **not** modify any application code in this phase. Only create the plan doc.
 
 ⛔ **STOP.** Tell the user the feature branch is created and the plan is written to
-`plans/IMPLEMENTATION-PLAN.md`, and ask them to review and approve it. Wait for
-explicit approval before Phase 2.
+`plans/IMPLEMENTATION-PLAN.md`, and ask them to review and approve it. Then treat
+their reply as one of:
+- **Approve** → proceed to Phase 2.
+- **Revise** (any feedback, or they say they hand-edited the plan file) → update
+  `plans/IMPLEMENTATION-PLAN.md` accordingly, re-present it, and **STOP again**.
+  Loop here as many times as needed — do not move on until the user approves.
+- **Reject / start over** → discard the current plan and regenerate it from
+  `CHANGES.md` using their new direction, then **STOP again**.
+
+Before starting Phase 2, **re-read** `plans/IMPLEMENTATION-PLAN.md` from disk in
+case the user edited it by hand, and implement that latest version.
 
 ## Phase 2 — Implement
 
@@ -46,8 +55,17 @@ Only after the user approves the plan. You are already on the feature branch:
 3. Do **not** commit yet.
 
 ⛔ **STOP.** Summarize the code changes (a `git diff --stat` plus a short
-description) and ask the user to review and approve the implementation. Wait for
-explicit approval before Phase 3.
+description) and ask the user to review and approve the implementation. Then treat
+their reply as one of:
+- **Approve** → proceed to Phase 3.
+- **Revise** (any feedback on the code) → make the additional edits on the same
+  feature branch, re-run the verification steps, show the updated `git diff`, and
+  **STOP again**. Loop here as many times as needed. Nothing is committed yet, so
+  these iterations stay as uncommitted working changes.
+- **Reject** → revert your edits (`git checkout -- .` / undo new files) and ask
+  how to proceed.
+
+Do not commit until the user approves the implementation.
 
 ## Phase 3 — Commit, publish & open PR
 
