@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+import EditTodoDialog from "./components/EditTodoDialog";
+import TodoItem from "./components/TodoItem";
 
 const API = "/api/todos";
 
 export default function App() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState("");
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingTodo, setEditingTodo] = useState(null);
+  const [editingText, setEditingText] = useState("");
 
   useEffect(() => {
     fetch(API)
@@ -42,6 +47,34 @@ export default function App() {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   }
 
+  function openEditDialog(todo) {
+    setEditingTodo(todo);
+    setEditingText(todo.text);
+    setEditOpen(true);
+  }
+
+  function closeEditDialog() {
+    setEditOpen(false);
+    setEditingTodo(null);
+    setEditingText("");
+  }
+
+  async function saveEdit(textValue) {
+    if (!editingTodo) return;
+
+    const value = textValue.trim();
+    if (!value) return;
+
+    const res = await fetch(`${API}/${editingTodo.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: value }),
+    });
+    const updated = await res.json();
+    setTodos((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+    closeEditDialog();
+  }
+
   return (
     <div className="container">
       <h1>Todo App</h1>
@@ -59,22 +92,23 @@ export default function App() {
       ) : (
         <ul className="list">
           {todos.map((todo) => (
-            <li key={todo.id} className={todo.done ? "done" : ""}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={todo.done}
-                  onChange={() => toggleTodo(todo)}
-                />
-                <span>{todo.text}</span>
-              </label>
-              <button onClick={() => deleteTodo(todo.id)} className="delete">
-                ✕
-              </button>
-            </li>
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onToggle={toggleTodo}
+              onDelete={deleteTodo}
+              onEdit={openEditDialog}
+            />
           ))}
         </ul>
       )}
+
+      <EditTodoDialog
+        open={editOpen}
+        value={editingText}
+        onClose={closeEditDialog}
+        onSave={saveEdit}
+      />
     </div>
   );
 }
